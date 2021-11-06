@@ -208,6 +208,20 @@ class SubmissionDemo(object):
             elif c == 104:
                 s += u"口"
         return decoder(s)
+    
+    def _bezier_to_poly(self, bezier):
+        # bezier to polygon
+        u = np.linspace(0, 1, 20)
+        bezier = bezier.reshape(2, 4, 2).transpose(0, 2, 1).reshape(4, 4)
+        points = (
+            np.outer((1 - u) ** 3, bezier[:, 0])
+            + np.outer(3 * u * ((1 - u) ** 2), bezier[:, 1])
+            + np.outer(3 * (u ** 2) * (1 - u), bezier[:, 2])
+            + np.outer(u ** 3, bezier[:, 3])
+        )
+        points = np.concatenate((points[:, :2], points[:, 2:]), axis=0)
+        
+        return points
 
     def run_on_image(self, image):
         """
@@ -224,13 +238,16 @@ class SubmissionDemo(object):
         bbox_ltrbs = outputs['instances'].pred_boxes.tensor.cpu().numpy().tolist()
         recs = outputs['instances'].recs
         scores = outputs['instances'].scores.tolist()
+        beziers = outputs['instances'].beziers.numpy()
         
         results = []
-        for rec, score, bbox_ltrb in zip(recs, scores, bbox_ltrbs):
+        for bezier, rec, score, bbox_ltrb in zip(beziers, recs, scores, bbox_ltrbs):
             text = self._decode_recognition(rec)
+            polygon = self._bezier_to_poly(bezier)
             ele = bbox_ltrb.copy()
             ele.append(score)
             ele.append(text)
+            ele.append(bezier)
             results.append(ele)
 
         return results
