@@ -250,7 +250,7 @@ class SubmissionDemo(object):
                 ele.append(polygon[i][1])
             ele.append(score)
             ele.append(text)
-            ele.append(polygon)
+            # ele.append(polygon)
             results.append(ele)
 
         return results
