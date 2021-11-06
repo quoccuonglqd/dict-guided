@@ -238,7 +238,7 @@ class SubmissionDemo(object):
         bbox_ltrbs = outputs['instances'].pred_boxes.tensor.cpu().numpy().tolist()
         recs = outputs['instances'].recs
         scores = outputs['instances'].scores.tolist()
-        beziers = outputs['instances'].beziers.numpy()
+        beziers = outputs['instances'].beziers.cpu().numpy()
         
         results = []
         for bezier, rec, score, bbox_ltrb in zip(beziers, recs, scores, bbox_ltrbs):
