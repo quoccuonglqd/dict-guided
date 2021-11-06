@@ -229,7 +229,8 @@ class SubmissionDemo(object):
         for rec, score, bbox_ltrb in zip(recs, scores, bbox_ltrbs):
             text = self._decode_recognition(rec)
             ele = bbox_ltrb.copy()
-            ele.append(score, text)
+            ele.append(score)
+            ele.append(text)
             results.append(ele)
 
         return results
