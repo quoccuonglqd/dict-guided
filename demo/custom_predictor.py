@@ -235,19 +235,22 @@ class SubmissionDemo(object):
         """
         outputs = self.predictor(image)
 
-        bbox_ltrbs = outputs['instances'].pred_boxes.tensor.cpu().numpy().tolist()
+        # bbox_ltrbs = outputs['instances'].pred_boxes.tensor.cpu().numpy().tolist()
         recs = outputs['instances'].recs
         scores = outputs['instances'].scores.tolist()
         beziers = outputs['instances'].beziers.cpu().numpy()
         
         results = []
-        for bezier, rec, score, bbox_ltrb in zip(beziers, recs, scores, bbox_ltrbs):
+        for bezier, rec, score in zip(beziers, recs, scores):
             text = self._decode_recognition(rec)
             polygon = self._bezier_to_poly(bezier)
-            ele = bbox_ltrb.copy()
+            ele = []
+            for i in [0,19,20,39]:
+                ele.append(polygon[i][0])
+                ele.append(polygon[i][1])
             ele.append(score)
             ele.append(text)
-            ele.append(bezier)
+            ele.append(polygon)
             results.append(ele)
 
         return results
