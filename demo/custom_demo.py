@@ -94,20 +94,25 @@ if __name__ == "__main__":
                     path, len(predictions), time.time() - start_time
                 )
             )
-            print(predictions)
+            # print(predictions)
 
-            # if args.output:
-            #     if os.path.isdir(args.output):
-            #         assert os.path.isdir(args.output), args.output
-            #         out_filename = os.path.join(args.output, os.path.basename(path))
-            #     else:
-            #         assert len(args.input) == 1, "Please specify a directory with args.output"
-            #         out_filename = args.output
-            #     visualized_output.save(out_filename)
-            # else:
-            #     cv2.imshow(WINDOW_NAME, visualized_output.get_image()[:, :, ::-1])
-            #     if cv2.waitKey(0) == 27:
-            #         break  # esc to quit
+            if args.output:
+                if os.path.isdir(args.output):
+                    assert os.path.isdir(args.output), args.output
+                    filename, _ = os.path.splitext(path)
+                    out_filename = os.path.join(args.output, os.path.basename(filename + '.txt'))
+                else:
+                    assert len(args.input) == 1, "Please specify a directory with args.output"
+                    out_filename = args.output
+                with open(out_filename, 'w') as f:
+                    for prediction in predictions:
+                        prediction = [str(x) for x in prediction]
+                        f.write(','.join(prediction) + '\n')
+
+            else:
+                cv2.imshow(WINDOW_NAME, visualized_output.get_image()[:, :, ::-1])
+                if cv2.waitKey(0) == 27:
+                    break  # esc to quit
     elif args.webcam:
         assert args.input is None, "Cannot have both --input and --webcam!"
         cam = cv2.VideoCapture(0)
